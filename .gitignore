@@ -1,0 +1,106 @@
+# Based on the situation
+**/*.sql
+temp_image
+test-screenshots
+
+node_modules
+venv
+.venv
+dist
+static_root
+media_root
+staticfiles
+cookies.*
+.agent
+.agents
+.playwright-mcp
+original_php_codes
+
+# Do not save tailwindcss
+**/tailwindcss
+**/local-cdn
+src_template
+
+## Backend ##
+**/*.log
+**/*.pot
+**/*.pyc
+**/__pycache__
+**/**/db.sqlite3
+
+# Environment files
+.env_dirs/
+.env_files/
+.env_files/*
+!.env_files/.gitkeep
+.env.example.*
+.local
+.production
+.prod
+**/*.env
+
+# Backup files # 
+*.bak 
+
+# Python # 
+*.py[cod] 
+*$py.class 
+
+# Distribution / packaging 
+**/.Python build/ 
+**/develop-eggs/ 
+**/downloads/ 
+**/eggs/ 
+**/.eggs/ 
+**/lib/ 
+**/lib64/ 
+**/parts/ 
+**/sdist/ 
+**/var/ 
+**/wheels/ 
+**/*.egg-info/ 
+**/.installed.cfg 
+**/*.egg 
+**/*.manifest 
+**/*.spec 
+**/dist/
+**/static_root/
+**/media_root/
+**/staticfiles/
+
+# Installer logs 
+pip-log.txt 
+pip-delete-this-directory.txt 
+
+# Unit test / coverage reports 
+htmlcov/ 
+.tox/ 
+.coverage 
+.coverage.* 
+.cache 
+.pytest_cache/ 
+nosetests.xml 
+coverage.xml 
+*.cover 
+.hypothesis/ 
+
+# Jupyter Notebook 
+**/.ipynb_checkpoints 
+
+# pyenv 
+**/.python-version 
+
+# celery 
+**/celerybeat-schedule.* 
+
+# Visual Studio Code # 
+**/.vscode
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/launch.json 
+!.vscode/extensions.json 
+**/.cursor
+**/.claude
+.history.env_files/
+
+
