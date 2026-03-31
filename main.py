@@ -1,77 +1,127 @@
-from fastapi import FastAPI
+# 3. Building CRDU API
+
+books = [
+    {
+        "id": 1,
+        "title": "Think Python",
+        "author": "Allen B. Downey",
+        "publisher": "O'Reilly Media",
+        "published_date": "2021-01-01",
+        "page_count": 1234,
+        "language": "English",
+    },
+    {
+        "id": 2,
+        "title": "Django By Example",
+        "author": "Antonio Mele",
+        "publisher": "Packt Publishing Ltd",
+        "published_date": "2022-01-19",
+        "page_count": 1023,
+        "language": "English",
+    },
+    {
+        "id": 3,
+        "title": "The web socket handbook",
+        "author": "Alex Diaconu",
+        "publisher": "Xinyu Wang",
+        "published_date": "2021-01-01",
+        "page_count": 3677,
+        "language": "English",
+    },
+    {
+        "id": 4,
+        "title": "Head first Javascript",
+        "author": "Hellen Smith",
+        "publisher": "Oreilly Media",
+        "published_date": "2021-01-01",
+        "page_count": 540,
+        "language": "English",
+    },
+    {
+        "id": 5,
+        "title": "Algorithms and Data Structures In Python",
+        "author": "Kent Lee",
+        "publisher": "Springer, Inc",
+        "published_date": "2021-01-01",
+        "page_count": 9282,
+        "language": "English",
+    },
+    {
+        "id": 6,
+        "title": "Head First HTML5 Programming",
+        "author": "Eric T Freeman",
+        "publisher": "O'Reilly Media",
+        "published_date": "2011-21-01",
+        "page_count": 3006,
+        "language": "English",
+    },
+]
+
+from fastapi import FastAPI, status
+from fastapi.exceptions import HTTPException
+from pydantic import BaseModel
+from typing import List
 
 app = FastAPI()
 
-@app.get("/")
-async def read_root():
-    return {"message": "Hello, World!"}
+class Book(BaseModel):
+    id: int
+    title: str
+    author: str
+    publisher: str
+    published_date: str
+    page_count: int
+    language: str
 
-# Path parameter
-@app.get('/greet/{username}')
-async def greet(username:str):
-   return {"message":f"Hello {username}"}
+class BookUpdateModel(BaseModel):
+    title: str
+    author: str
+    publisher: str
+    page_count: int
+    language: str
 
-# Query parameter
+@app.get("/books", response_model=List[Book])
+async def get_all_books():
+    return books
 
-user_list = [
-   "Jerry",
-   "Joey",
-   "Phil",
-   "Sungsoon"
-]
+@app.post("/books", status_code=status.HTTP_201_CREATED)
+async def create_a_book(book_data: Book) -> dict:
+    # model_dump() is a Pydantic method that converts a Pydantic model instance into a plain Python dictionary.
+    new_book = book_data.model_dump()
 
-@app.get('/search')
-async def search_for_user(q :str):
-    for user in user_list:
-        if q.lower() == user.lower():
-            return {"message":f"User {q} found"}
-    return {"message":f"User {q} not found"}
+    books.append(new_book)
 
-# Optional query parameter
-from typing import Optional
+    return new_book
 
-@app.get('/greet_optional')
-async def greet_optional(q :Optional[str] = None):
-    if q:
-        return {"message":f"Hello {q}"}
-    return {"message":f"Hello world"}
+@app.get("/book/{book_id}")
+async def get_book(book_id: int) -> dict:
+    print(f"Getting book with id: {book_id}")
+    for book in books:
+        if book["id"] == book_id:
+            return book
 
-# Request body
-from pydantic import BaseModel
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
-class User(BaseModel):
-    username: str
-    email: str
+@app.patch("/book/{book_id}")
+async def update_book(book_id: int,book_update_data:BookUpdateModel) -> dict:
 
-@app.post('/create_user')
-async def create_user(user: User):
-    new_user = {
-        "username": user.username,
-        "email": user.email
-    }
-    user_list.append(new_user)
-    return {"message":f"User {new_user['username']} created"}
+    for book in books:
+        if book['id'] == book_id:
+            book['title'] = book_update_data.title
+            book['publisher'] = book_update_data.publisher
+            book['page_count'] = book_update_data.page_count
+            book['language'] = book_update_data.language
 
-# Request Headers
-from fastapi import Header
+            return book
 
-@app.get('/get_headers')
-async def get_all_request_headers(
-    user_agent: Optional[str] = Header(None),
-    accept_encoding: Optional[str] = Header(None),
-    referer: Optional[str] = Header(None),
-    connection: Optional[str] = Header(None),
-    accept_language: Optional[str] = Header(None),
-    host: Optional[str] = Header(None),
-):
-    request_headers = {}
-    request_headers["User-Agent"] = user_agent
-    request_headers["Accept-Encoding"] = accept_encoding
-    request_headers["Referer"] = referer
-    request_headers["Accept-Language"] = accept_language
-    request_headers["Connection"] = connection
-    request_headers["Host"] = host
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
-    return request_headers
+@app.delete("/book/{book_id}",status_code=status.HTTP_204_NO_CONTENT)
+async def delete_book(book_id: int):
+    for book in books:
+        if book["id"] == book_id:
+            books.remove(book)
 
+            return {}
 
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
