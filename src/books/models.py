@@ -11,7 +11,8 @@ class Book(SQLModel , table=True):
             pg.UUID,
             primary_key=True,
             unique=True,
-            nullable=False
+            nullable=False,
+            default=uuid.uuid4
         )
     )
 
